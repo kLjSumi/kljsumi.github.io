@@ -1,0 +1,14 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>JVM - 分类 - kLjSumi</title>
+        <link>http://kljsumi.gitee.io/categories/jvm/</link>
+        <description>JVM - 分类 - kLjSumi</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Wed, 16 Sep 2020 15:25:20 &#43;0800</lastBuildDate><atom:link href="http://kljsumi.gitee.io/categories/jvm/" rel="self" type="application/rss+xml" /><item>
+    <title>intern()方法的作用</title>
+    <link>http://kljsumi.gitee.io/posts/first_post/</link>
+    <pubDate>Wed, 16 Sep 2020 15:25:20 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://kljsumi.gitee.io/posts/first_post/</guid>
+    <description><![CDATA[intern() 如果字符串常量池中没有对应的字符串的话，则在常量池中生成，并将引用地址改为常量池。如果存在就返回字符串， 保证变量s指向的是字符串常量池中的]]></description>
+</item></channel>
+</rss>

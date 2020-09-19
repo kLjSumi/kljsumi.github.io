@@ -1,0 +1,23 @@
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+    <channel>
+        <title>kLjSumi</title>
+        <link>http://kljsumi.gitee.io/</link>
+        <description>关于 LoveIt 主题</description>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 17 Sep 2020 14:13:14 &#43;0800</lastBuildDate>
+            <atom:link href="http://kljsumi.gitee.io/index.xml" rel="self" type="application/rss+xml" />
+        <item>
+    <title>Java反射</title>
+    <link>http://kljsumi.gitee.io/posts/reflect/reflect/</link>
+    <pubDate>Thu, 17 Sep 2020 14:13:14 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://kljsumi.gitee.io/posts/reflect/reflect/</guid>
+    <description><![CDATA[反射 反射：将类的各个组成部分封装为其他对象，就是反射机制 ​ 好处： ​ 1、可以在程序的运行过程中，操作这些对象 ​ 2、可以解耦，提高程序的可扩展性]]></description>
+</item><item>
+    <title>intern()方法的作用</title>
+    <link>http://kljsumi.gitee.io/posts/first_post/</link>
+    <pubDate>Wed, 16 Sep 2020 15:25:20 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://kljsumi.gitee.io/posts/first_post/</guid>
+    <description><![CDATA[intern() 如果字符串常量池中没有对应的字符串的话，则在常量池中生成，并将引用地址改为常量池。如果存在就返回字符串， 保证变量s指向的是字符串常量池中的]]></description>
+</item></channel>
+</rss>
