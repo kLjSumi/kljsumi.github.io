@@ -3,7 +3,14 @@
         <title>所有文章 - kLjSumi</title>
         <link>http://kljsumi.gitee.io/posts/</link>
         <description>所有文章 | kLjSumi</description>
-        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Thu, 17 Sep 2020 14:13:14 &#43;0800</lastBuildDate><atom:link href="http://kljsumi.gitee.io/posts/" rel="self" type="application/rss+xml" /><item>
+        <generator>Hugo -- gohugo.io</generator><language>zh-CN</language><copyright>This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.</copyright><lastBuildDate>Sat, 24 Oct 2020 15:29:06 &#43;0800</lastBuildDate><atom:link href="http://kljsumi.gitee.io/posts/" rel="self" type="application/rss+xml" /><item>
+    <title>理解Holder和枚举单例模式</title>
+    <link>http://kljsumi.gitee.io/posts/singleton/singleton/</link>
+    <pubDate>Sat, 24 Oct 2020 15:29:06 &#43;0800</pubDate>
+    <author>作者</author>
+    <guid>http://kljsumi.gitee.io/posts/singleton/singleton/</guid>
+    <description><![CDATA[单例模式 常见的单例模式 饿汉式 写法简单，避免了线程同步问题。没有延迟加载，如果长时间没使用这个实例会造成空间浪费。 懒汉式 性能好，懒加载。但存在]]></description>
+</item><item>
     <title>Java反射</title>
     <link>http://kljsumi.gitee.io/posts/reflect/reflect/</link>
     <pubDate>Thu, 17 Sep 2020 14:13:14 &#43;0800</pubDate>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>理解Holder和枚举单例模式 - kLjSumi</title><meta name="Description" content="关于 LoveIt 主题"><meta property="og:title" content="理解Holder和枚举单例模式" />
+<meta property="og:description" content="单例模式 常见的单例模式 饿汉式 写法简单，避免了线程同步问题。没有延迟加载，如果长时间没使用这个实例会造成空间浪费。 懒汉式 性能好，懒加载。但存在" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://kljsumi.gitee.io/posts/singleton/singleton/" />
+<meta property="og:image" content="http://kljsumi.gitee.io/logo.png"/>
+<meta property="article:published_time" content="2020-10-24T15:29:06+08:00" />
+<meta property="article:modified_time" content="2020-10-24T15:29:06+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://kljsumi.gitee.io/logo.png"/>
+
+<meta name="twitter:title" content="理解Holder和枚举单例模式"/>
+<meta name="twitter:description" content="单例模式 常见的单例模式 饿汉式 写法简单，避免了线程同步问题。没有延迟加载，如果长时间没使用这个实例会造成空间浪费。 懒汉式 性能好，懒加载。但存在"/>
+<meta name="application-name" content="LoveIt">
+<meta name="apple-mobile-web-app-title" content="LoveIt"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://kljsumi.gitee.io/posts/singleton/singleton/" /><link rel="prev" href="http://kljsumi.gitee.io/posts/reflect/reflect/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "理解Holder和枚举单例模式",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/kljsumi.gitee.io\/posts\/singleton\/singleton\/"
+        },"genre": "posts","keywords": "Java, 设计模式","wordcount":  1744 ,
+        "url": "http:\/\/kljsumi.gitee.io\/posts\/singleton\/singleton\/","datePublished": "2020-10-24T15:29:06+08:00","dateModified": "2020-10-24T15:29:06+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kLjSumi"},"author": {
+                "@type": "Person",
+                "name": "kLjSumi"
+            },"description": ""
+    }
+    </script></head>
+    <body header-desktop="" header-mobile=""><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : '' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="kLjSumi">kLjSumi</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="kLjSumi">kLjSumi</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">理解Holder和枚举单例模式</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kLjSumi</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-10-24">2020-10-24</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1744 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 4 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li><a href="#单例模式">单例模式</a>
+      <ul>
+        <li><a href="#常见的单例模式">常见的单例模式</a></li>
+        <li><a href="#holder单例模式">Holder单例模式</a></li>
+        <li><a href="#避免反序列化对单例的破坏">避免反序列化对单例的破坏</a></li>
+        <li><a href="#枚举单例模式">枚举单例模式</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h2 id="单例模式">单例模式</h2>
+<h3 id="常见的单例模式">常见的单例模式</h3>
+<ol>
+<li>
+<p><strong>饿汉式</strong></p>
+<p>写法简单，避免了线程同步问题。没有延迟加载，如果长时间没使用这个实例会造成空间浪费。</p>
+</li>
+<li>
+<p><strong>懒汉式</strong></p>
+<p>性能好，懒加载。但存在线程安全问题</p>
+</li>
+<li>
+<p><strong>懒汉式+同步方法</strong></p>
+<p>线程安全，懒加载。但性能差</p>
+</li>
+<li>
+<p><strong>懒汉式+同步代码块</strong></p>
+<p>线程不安全，性能一般</p>
+</li>
+<li>
+<p><strong>DCL+volatile</strong></p>
+<p>线程安全，懒加载，性能比较好</p>
+</li>
+<li>
+<p><strong>Holder单例模式</strong></p>
+<p>线程安全，懒加载，性能好。</p>
+</li>
+<li>
+<p><strong>枚举单例模式</strong></p>
+<p>线程安全，懒加载，性能好，不会被反序列化破坏。</p>
+</li>
+</ol>
+<p>对于前五种方式，他们虽然都能实现单例模式，但是优缺点很明显。</p>
+<p>饿汉式：虽然并发情况下安全性高。但不能懒加载，内存消耗大。</p>
+<p>懒汉式：能实现懒加载，虽然一步步优化并发情况下安全性得到了保证，但使用synchronized对性能有所影响。</p>
+<h3 id="holder单例模式">Holder单例模式</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
+</span><span class="cm"> * @author kLjSumi
+</span><span class="cm"> * @Date 2020/10/24
+</span><span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+
+    <span class="c1">//在静态内部类中持有Singleton的实例，并且可以被直接初始化
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Holder</span> <span class="o">{</span>
+        <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">//调用getInstance()方法，事实上是获得Holder的instance静态属型
+</span><span class="c1"></span>    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Holder</span><span class="o">.</span><span class="na">instance</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在外部类加载时并不需要立即加载内部类，所以内部类不被初始化则不用去初始化instance，故而实现懒加载。</p>
+<p>当调用<code>getInstance()</code>时，instance被初始化。在这个初始化过程中，虚拟机会保证一个类的&lt;clinit&gt;()方法在多线程环境中被正确地加锁、同步。如果多个线程同时去初始化一个类，那么只会有一个线程去执行这个类的&lt;clinit&gt; ()方法，其他线程都需要阻塞等待，直到该方法执行完毕。</p>
+<p>在调用<code>getInstance()</code>方法时，没有多次的去new对象而是在初始化期间只创建一次，每次取的都是Holder中的同一个对象，这点与饿汉式相同保证了单例。</p>
+<p>但Holder单例模式也不是最完美的单例模式，由于静态内部类的形式创建单例，所以外部无法传递参数进去。</p>
+<h3 id="避免反序列化对单例的破坏">避免反序列化对单例的破坏</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
+</span><span class="cm"> * @author kLjSumi
+</span><span class="cm"> * @Date 2020/10/24
+</span><span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Singleton</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="nf">Singleton</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Holder</span> <span class="o">{</span>
+        <span class="kd">private</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="n">instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Singleton</span> <span class="nf">getInstance</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Holder</span><span class="o">.</span><span class="na">instance</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">//反序列化时，会通过反射的方式调用该方法
+</span><span class="c1"></span>    <span class="kd">private</span> <span class="n">Object</span> <span class="nf">readResolve</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;调用了readResolve()方法!&#34;</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">Holder</span><span class="o">.</span><span class="na">instance</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>之前讲到的所有单例模式都存在一个问题，就是一旦实现了<code>serializable</code>接口之后，每次调用<code>readObject()</code>方法，会通过反射的方式调用无参构造方法，重新创建一个对象破坏单例。可以通过定义<code>readResolve()</code>方法来避免。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="k">if</span> <span class="o">(</span><span class="n">obj</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span>
+            <span class="n">handles</span><span class="o">.</span><span class="na">lookupException</span><span class="o">(</span><span class="n">passHandle</span><span class="o">)</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span>
+            <span class="n">desc</span><span class="o">.</span><span class="na">hasReadResolveMethod</span><span class="o">())</span>
+        <span class="o">{</span>
+            <span class="n">Object</span> <span class="n">rep</span> <span class="o">=</span> <span class="n">desc</span><span class="o">.</span><span class="na">invokeReadResolve</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">unshared</span> <span class="o">&amp;&amp;</span> <span class="n">rep</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">isArray</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">rep</span> <span class="o">=</span> <span class="n">cloneArray</span><span class="o">(</span><span class="n">rep</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">rep</span> <span class="o">!=</span> <span class="n">obj</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// Filter the replacement object
+</span><span class="c1"></span>                <span class="k">if</span> <span class="o">(</span><span class="n">rep</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="k">if</span> <span class="o">(</span><span class="n">rep</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">isArray</span><span class="o">())</span> <span class="o">{</span>
+                        <span class="n">filterCheck</span><span class="o">(</span><span class="n">rep</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="n">Array</span><span class="o">.</span><span class="na">getLength</span><span class="o">(</span><span class="n">rep</span><span class="o">));</span>
+                    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                        <span class="n">filterCheck</span><span class="o">(</span><span class="n">rep</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="o">-</span><span class="n">1</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+                <span class="n">handles</span><span class="o">.</span><span class="na">setObject</span><span class="o">(</span><span class="n">passHandle</span><span class="o">,</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">rep</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>这部分代码选自<code>ObjectInputStream</code>类中的<code>readOrdinaryObject()</code>方法。</p>
+<p><code>hasReadResolveMethod</code>：如果实现了<code>serializable</code>或者<code>externalizable</code>接口的类中包含<code>readResolve()</code>方法则返回true。</p>
+<p><code>invokeReadResovle()</code>：通过反射的方式调用要被反序列化的类的<code>readResolve()</code>方法。</p>
+<p>所以在<code>Singleton</code>中定义<code>readResolve()</code>方法，并指定要返回的对象的生成策略，就可以防止单例被破坏。</p>
+<h3 id="枚举单例模式">枚举单例模式</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-java" data-lang="java"><span class="cm">/**
+</span><span class="cm"> * @author kLjSumi
+</span><span class="cm"> * @Date 2020/10/24
+</span><span class="cm"> */</span>
+<span class="kd">public</span> <span class="kd">enum</span> <span class="n">Singleton</span> <span class="o">{</span>
+    <span class="c1">//创建一个枚举对象，该对象天生为单例
+</span><span class="c1"></span>    <span class="n">INSTANCE</span><span class="o">;</span>
+    
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doSomething</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&#34;doSomething&#34;</span><span class="o">);</span>
+    <span class="o">}</span> 
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在所有单例实现方式中， 枚举是一种在代码写法上最简单的方式。</p>
+<p>当使用<code>enmu</code>来定义一个枚举类型的时候，编译器会自动帮我们创建一个final类型的类继承<code>Enmu</code>类，并且其中的属性会被定义为<code>public static final</code>，当一个Java类第一次被使用静态资源初始化、Java类的加载和初始化过程都是现成安全的，Holder单例模式中有讲解这个初始化过程。</p>
+<p>为了保证枚举类型像Java规范中所说的，每个枚举类型及其定义的枚举变量在JVM中都是唯一的，在枚举类型的序列化和反序列化上，Java做了特殊定制，所以避免了反序列化对单例的破坏。</p>
+<p>在《Effective Java》一书中的第三条，作者Josh Bloch也提倡使用该方式来实现单例。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2020-10-24</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="http://kljsumi.gitee.io/posts/singleton/singleton/" data-title="理解Holder和枚举单例模式" data-hashtags="Java,设计模式"><i class="fab fa-twitter fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="http://kljsumi.gitee.io/posts/singleton/singleton/" data-hashtag="Java"><i class="fab fa-facebook-square fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="http://kljsumi.gitee.io/posts/singleton/singleton/" data-title="理解Holder和枚举单例模式"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="http://kljsumi.gitee.io/posts/singleton/singleton/" data-title="理解Holder和枚举单例模式"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="http://kljsumi.gitee.io/posts/singleton/singleton/" data-title="理解Holder和枚举单例模式" data-ralateuid="xxxx"><i class="fab fa-weibo fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/java/">Java</a>,&nbsp;<a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/reflect/reflect/" class="prev" rel="prev" title="Java反射"><i class="fas fa-angle-left fa-fw"></i>Java反射</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.75.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank"></a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
