@@ -20,7 +20,7 @@
 <meta name="application-name" content="LoveIt">
 <meta name="apple-mobile-web-app-title" content="LoveIt"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://kljsumi.gitee.io/posts/linux/create/create/" /><link rel="prev" href="http://kljsumi.gitee.io/posts/singleton/singleton/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://kljsumi.gitee.io/posts/linux/create/create/" /><link rel="prev" href="http://kljsumi.gitee.io/posts/singleton/singleton/" /><link rel="next" href="http://kljsumi.gitee.io/posts/linux/vagrant_full_capacity/vagrant_full_capacity/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
     {
         "@context": "http://schema.org",
         "@type": "BlogPosting",
@@ -29,7 +29,7 @@
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": "http:\/\/kljsumi.gitee.io\/posts\/linux\/create\/create\/"
-        },"genre": "posts","keywords": "docker, linux","wordcount":  1187 ,
+        },"genre": "posts","keywords": "docker, linux","wordcount":  1300 ,
         "url": "http:\/\/kljsumi.gitee.io\/posts\/linux\/create\/create\/","datePublished": "2020-10-27T21:45:18+08:00","dateModified": "2020-10-27T21:45:18+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
             "@type": "Organization",
             "name": "kLjSumi"},"author": {
@@ -106,7 +106,7 @@
             <div class="toc-content" id="toc-content-auto"></div>
         </div><article class="page single"><h1 class="single-title animated flipInX">第一次使用Docker</h1><div class="post-meta">
             <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kLjSumi</a></span></div>
-            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-10-27">2020-10-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1187 字&nbsp;
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-10-27">2020-10-27</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 1300 字&nbsp;
                 <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 3 分钟&nbsp;</div>
         </div><div class="details toc" id="toc-static"  kept="">
                 <div class="details-summary toc-title">
@@ -130,6 +130,12 @@
             <li><a href="#docker">Docker</a></li>
             <li><a href="#mysql">MySQL</a></li>
             <li><a href="#redis">Redis</a></li>
+          </ul>
+        </li>
+        <li><a href="#更新">更新</a>
+          <ul>
+            <li><a href="#elasticsearch">ElasticSearch</a></li>
+            <li><a href="#kibana">Kibana</a></li>
           </ul>
         </li>
       </ul>
@@ -437,6 +443,66 @@ $ docker restart redis
 $ docker update redis --restart=always
 </code></pre></td></tr></table>
 </div>
+</div><h3 id="更新">更新</h3>
+<h4 id="elasticsearch">ElasticSearch</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ docker pull elasticsearch:7.6.2
+
+$ mkdir -p /mydata/elasticsearch/config
+$ mkdir -p /mydata/elasticsearch/data
+$ echo &#34;http.host:0.0.0.0&#34;&gt;&gt;/mydata/elasticsearch/config/elasticsearch.yml
+$ chmod -R 777 /mydata/elasticsearch/
+
+$ docker run --name elasticsearch -p 9200:9200 -p 9300:9300 \
+-e  &#34;discovery.type=single-node&#34; \
+-e ES_JAVA_OPTS=&#34;-Xms64m -Xmx512m&#34; \
+-v /mydata/elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml \
+-v /mydata/elasticsearch/data:/usr/share/elasticsearch/data \
+-v  /mydata/elasticsearch/plugins:/usr/share/elasticsearch/plugins \
+-d elasticsearch:7.6.2
+
+# 设置开机启动
+$ docker update elasticsearch --restart=always
+</code></pre></td></tr></table>
+</div>
+</div><h4 id="kibana">Kibana</h4>
+<p>可视化检索数据</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ docker pull kibana:7.6.2
+
+$ docker run --name kibana -e ELASTICSEARCH_HOSTS=http://192.168.56.100:9200 -p 5601:5601 -d kibana:7.6.2
+
+$ docker update kibana --restart=always
+</code></pre></td></tr></table>
+</div>
 </div></div><div class="post-footer" id="post-footer">
     <div class="post-info">
         <div class="post-info-line">
@@ -460,7 +526,8 @@ $ docker update redis --restart=always
         </section>
     </div>
 
-    <div class="post-nav"><a href="/posts/singleton/singleton/" class="prev" rel="prev" title="理解Holder和枚举单例模式"><i class="fas fa-angle-left fa-fw"></i>理解Holder和枚举单例模式</a></div>
+    <div class="post-nav"><a href="/posts/singleton/singleton/" class="prev" rel="prev" title="理解Holder和枚举单例模式"><i class="fas fa-angle-left fa-fw"></i>理解Holder和枚举单例模式</a>
+            <a href="/posts/linux/vagrant_full_capacity/vagrant_full_capacity/" class="next" rel="next" title="Docker磁盘占用100%">Docker磁盘占用100%<i class="fas fa-angle-right fa-fw"></i></a></div>
 </div>
 </article></div>
             </main><footer class="footer">

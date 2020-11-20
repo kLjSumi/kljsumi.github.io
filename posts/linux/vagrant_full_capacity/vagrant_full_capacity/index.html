@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="robots" content="noodp" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+        <title>Docker磁盘占用100% - kLjSumi</title><meta name="Description" content="Vagrant导致磁盘占用100%，无法使用Docker拉取镜像"><meta property="og:title" content="Docker磁盘占用100%" />
+<meta property="og:description" content="Vagrant导致磁盘占用100%，无法使用Docker拉取镜像" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://kljsumi.gitee.io/posts/linux/vagrant_full_capacity/vagrant_full_capacity/" />
+<meta property="og:image" content="http://kljsumi.gitee.io/logo.png"/>
+<meta property="article:published_time" content="2020-11-20T15:53:46+08:00" />
+<meta property="article:modified_time" content="2020-11-20T15:53:46+08:00" />
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="http://kljsumi.gitee.io/logo.png"/>
+
+<meta name="twitter:title" content="Docker磁盘占用100%"/>
+<meta name="twitter:description" content="Vagrant导致磁盘占用100%，无法使用Docker拉取镜像"/>
+<meta name="application-name" content="LoveIt">
+<meta name="apple-mobile-web-app-title" content="LoveIt"><meta name="theme-color" content="#ffffff"><meta name="msapplication-TileColor" content="#da532c"><link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"><link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5"><link rel="manifest" href="/site.webmanifest"><link rel="canonical" href="http://kljsumi.gitee.io/posts/linux/vagrant_full_capacity/vagrant_full_capacity/" /><link rel="prev" href="http://kljsumi.gitee.io/posts/linux/create/create/" /><link rel="stylesheet" href="/lib/normalize/normalize.min.css"><link rel="stylesheet" href="/css/style.min.css"><link rel="stylesheet" href="/lib/fontawesome-free/all.min.css"><link rel="stylesheet" href="/lib/animate/animate.min.css"><script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "BlogPosting",
+        "headline": "Docker磁盘占用100%",
+        "inLanguage": "zh-CN",
+        "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "http:\/\/kljsumi.gitee.io\/posts\/linux\/vagrant_full_capacity\/vagrant_full_capacity\/"
+        },"genre": "posts","keywords": "Linux, Docker","wordcount":  772 ,
+        "url": "http:\/\/kljsumi.gitee.io\/posts\/linux\/vagrant_full_capacity\/vagrant_full_capacity\/","datePublished": "2020-11-20T15:53:46+08:00","dateModified": "2020-11-20T15:53:46+08:00","license": "This work is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.","publisher": {
+            "@type": "Organization",
+            "name": "kLjSumi"},"author": {
+                "@type": "Person",
+                "name": "kLjSumi"
+            },"description": "Vagrant导致磁盘占用100%，无法使用Docker拉取镜像"
+    }
+    </script></head>
+    <body header-desktop="" header-mobile=""><script type="text/javascript">(window.localStorage && localStorage.getItem('theme') ? localStorage.getItem('theme') === 'dark' : ('' === 'auto' ? window.matchMedia('(prefers-color-scheme: dark)').matches : '' === 'dark')) && document.body.setAttribute('theme', 'dark');</script>
+
+        <div id="mask"></div><div class="wrapper"><header class="desktop" id="header-desktop">
+    <div class="header-wrapper">
+        <div class="header-title">
+            <a href="/" title="kLjSumi">kLjSumi</a>
+        </div>
+        <div class="menu">
+            <div class="menu-inner"><a class="menu-item" href="/posts/"> 所有文章 </a><a class="menu-item" href="/tags/"> 标签 </a><a class="menu-item" href="/categories/"> 分类 </a><a class="menu-item" href="/about/"> 关于 </a><span class="menu-item delimiter"></span><span class="menu-item search" id="search-desktop">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-desktop">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-desktop" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-desktop" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-desktop">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </span><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                    <i class="fas fa-adjust fa-fw"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</header><header class="mobile" id="header-mobile">
+    <div class="header-container">
+        <div class="header-wrapper">
+            <div class="header-title">
+                <a href="/" title="kLjSumi">kLjSumi</a>
+            </div>
+            <div class="menu-toggle" id="menu-toggle-mobile">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+        <div class="menu" id="menu-mobile"><div class="search-wrapper">
+                    <div class="search mobile" id="search-mobile">
+                        <input type="text" placeholder="搜索文章标题或内容..." id="search-input-mobile">
+                        <a href="javascript:void(0);" class="search-button search-toggle" id="search-toggle-mobile" title="搜索">
+                            <i class="fas fa-search fa-fw"></i>
+                        </a>
+                        <a href="javascript:void(0);" class="search-button search-clear" id="search-clear-mobile" title="清空">
+                            <i class="fas fa-times-circle fa-fw"></i>
+                        </a>
+                        <span class="search-button search-loading" id="search-loading-mobile">
+                            <i class="fas fa-spinner fa-fw fa-spin"></i>
+                        </span>
+                    </div>
+                    <a href="javascript:void(0);" class="search-cancel" id="search-cancel-mobile">
+                        取消
+                    </a>
+                </div><a class="menu-item" href="/posts/" title="">所有文章</a><a class="menu-item" href="/tags/" title="">标签</a><a class="menu-item" href="/categories/" title="">分类</a><a class="menu-item" href="/about/" title="">关于</a><a href="javascript:void(0);" class="menu-item theme-switch" title="切换主题">
+                <i class="fas fa-adjust fa-fw"></i>
+            </a></div>
+    </div>
+</header>
+<div class="search-dropdown desktop">
+    <div id="search-dropdown-desktop"></div>
+</div>
+<div class="search-dropdown mobile">
+    <div id="search-dropdown-mobile"></div>
+</div>
+<main class="main">
+                <div class="container"><div class="toc" id="toc-auto">
+            <h2 class="toc-title">目录</h2>
+            <div class="toc-content" id="toc-content-auto"></div>
+        </div><article class="page single"><h1 class="single-title animated flipInX">Docker磁盘占用100%</h1><div class="post-meta">
+            <div class="post-meta-line"><span class="post-author"><a href="/" title="Author" rel=" author" class="author"><i class="fas fa-user-circle fa-fw"></i>kLjSumi</a></span></div>
+            <div class="post-meta-line"><i class="far fa-calendar-alt fa-fw"></i>&nbsp;<time datetime="2020-11-20">2020-11-20</time>&nbsp;<i class="fas fa-pencil-alt fa-fw"></i>&nbsp;约 772 字&nbsp;
+                <i class="far fa-clock fa-fw"></i>&nbsp;预计阅读 2 分钟&nbsp;</div>
+        </div><div class="details toc" id="toc-static"  kept="">
+                <div class="details-summary toc-title">
+                    <span>目录</span>
+                    <span><i class="details-icon fas fa-angle-right"></i></span>
+                </div>
+                <div class="details-content toc-content" id="toc-content-static"><nav id="TableOfContents">
+  <ul>
+    <li>
+      <ul>
+        <li><a href="#背景">背景</a></li>
+        <li><a href="#清理磁盘">清理磁盘</a></li>
+        <li><a href="#原因">原因</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav></div>
+            </div><div class="content" id="content"><h3 id="背景">背景</h3>
+<p>之前使用VirtualBox+Vagrant搭建了一个虚拟机，使用Docker下载了Mysql和Redis<a href="http://kljsumi.cn/posts/linux/create/create/" target="_blank" rel="noopener noreffer">点击这里</a>。这次需要安装一个ElasticSearch,和之前一样我使用<code>docker pull</code>。但是镜像却怎么也下载不下来，明明进度条已经下载满了，却始终不显示compelete,进度条一直显示在那儿，最后报错说docker tls handshake timeout。于是换了几个国内镜像还是不行，我想可能是我的网络真的不行，我换了个网重来一遍这次报错终于发现了问题：no space left on device，磁盘容量没了。</p>
+<h3 id="清理磁盘">清理磁盘</h3>
+<p>虚拟机创建时毕竟有40G的磁盘，我才下了两个镜像怎么就会磁盘空间不足了呢，于是开始清理磁盘。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">#查看下磁盘占用
+$ df -h  
+</code></pre></td></tr></table>
+</div>
+</div><p><img
+        class="lazyload"
+        src="/svg/loading.min.svg"
+        data-src="vagrant_full_capacity.assets/4E@WDUKPP[JJ58@I5BGKE07.png"
+        data-srcset="vagrant_full_capacity.assets/4E@WDUKPP[JJ58@I5BGKE07.png, vagrant_full_capacity.assets/4E@WDUKPP[JJ58@I5BGKE07.png 1.5x, vagrant_full_capacity.assets/4E@WDUKPP[JJ58@I5BGKE07.png 2x"
+        data-sizes="auto"
+        alt="vagrant_full_capacity.assets/4E@WDUKPP[JJ58@I5BGKE07.png"
+        title="img" /></p>
+<p>根据网上的办法我开始来清理Docker无用的数据</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">$ docker system prune -a
+</code></pre></td></tr></table>
+</div>
+</div><p>执行之后，发现虽然清理了2个多G的数据，显然这个问题。</p>
+<p>然后我进入了<code>/var/lib/docker/overlay2</code>这个目录发现里面的文件并不大。</p>
+<p>之后看到别人说其实和overlay没关系（它的usage和真实的disk usage相同），它只是一个docker的虚拟文件系统，真实的文件系统是前者<code>/dev/sdal</code>， 那么它对应的是更目录 <code>/</code>。这下知道要去根目录下找垃圾，哈哈。</p>
+<p>抓狂了一会儿后，开始找其他的办法。直接查看<code>/</code>下的大文件都放在哪了</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback"># 查找&#34;/&#34;目录下所有大于100M的所有文件
+$ find / -type f -size +100M -print0 | xargs -0 du -h | sort -nr 
+</code></pre></td></tr></table>
+</div>
+</div><p>这时候可以看到打印的文件大部分来自<code>/vagrant/AppData/Local</code>这个目录下。这下明白了是Vagrant的锅。</p>
+<h3 id="原因">原因</h3>
+<p><strong>vagrant提供了将本机目录挂载到虚拟机目录下的功能，默认是将vagrant配置文件所在目录挂载到虚拟机/vagrant目录下</strong></p>
+<p>所以一气之下把这个目录下的文件全删了，这下再来一次<code>df -h</code>就能看到上图了，这下舒服了。</p>
+</div><div class="post-footer" id="post-footer">
+    <div class="post-info">
+        <div class="post-info-line">
+            <div class="post-info-mod">
+                <span>更新于 2020-11-20</span>
+            </div>
+            <div class="post-info-license"></div>
+        </div>
+        <div class="post-info-line">
+            <div class="post-info-md"></div>
+            <div class="post-info-share">
+                <span><a href="javascript:void(0);" title="分享到 Twitter" data-sharer="twitter" data-url="http://kljsumi.gitee.io/posts/linux/vagrant_full_capacity/vagrant_full_capacity/" data-title="Docker磁盘占用100%" data-hashtags="Linux,Docker"><i class="fab fa-twitter fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Facebook" data-sharer="facebook" data-url="http://kljsumi.gitee.io/posts/linux/vagrant_full_capacity/vagrant_full_capacity/" data-hashtag="Linux"><i class="fab fa-facebook-square fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Hacker News" data-sharer="hackernews" data-url="http://kljsumi.gitee.io/posts/linux/vagrant_full_capacity/vagrant_full_capacity/" data-title="Docker磁盘占用100%"><i class="fab fa-hacker-news fa-fw"></i></a><a href="javascript:void(0);" title="分享到 Line" data-sharer="line" data-url="http://kljsumi.gitee.io/posts/linux/vagrant_full_capacity/vagrant_full_capacity/" data-title="Docker磁盘占用100%"><i data-svg-src="/lib/simple-icons/icons/line.min.svg"></i></a><a href="javascript:void(0);" title="分享到 微博" data-sharer="weibo" data-url="http://kljsumi.gitee.io/posts/linux/vagrant_full_capacity/vagrant_full_capacity/" data-title="Docker磁盘占用100%" data-ralateuid="xxxx"><i class="fab fa-weibo fa-fw"></i></a></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-info-more">
+        <section class="post-tags"><i class="fas fa-tags fa-fw"></i>&nbsp;<a href="/tags/linux/">linux</a>,&nbsp;<a href="/tags/docker/">docker</a></section>
+        <section>
+            <span><a href="javascript:void(0);" onclick="window.history.back();">返回</a></span>&nbsp;|&nbsp;<span><a href="/">主页</a></span>
+        </section>
+    </div>
+
+    <div class="post-nav"><a href="/posts/linux/create/create/" class="prev" rel="prev" title="第一次使用Docker"><i class="fas fa-angle-left fa-fw"></i>第一次使用Docker</a></div>
+</div>
+</article></div>
+            </main><footer class="footer">
+        <div class="footer-container"><div class="footer-line">由 <a href="https://gohugo.io/" target="_blank" rel="noopener noreffer" title="Hugo 0.75.0">Hugo</a> 强力驱动 | 主题 - <a href="https://github.com/dillonzq/LoveIt" target="_blank" rel="noopener noreffer" title="LoveIt 0.2.10"><i class="far fa-kiss-wink-heart fa-fw"></i> LoveIt</a>
+                </div><div class="footer-line"><i class="far fa-copyright fa-fw"></i><span itemprop="copyrightYear">2020</span><span class="author" itemprop="copyrightHolder">&nbsp;<a href="/" target="_blank"></a></span></div>
+        </div>
+    </footer></div>
+
+        <div id="fixed-buttons"><a href="#" id="back-to-top" class="fixed-button" title="回到顶部">
+                <i class="fas fa-arrow-up fa-fw"></i>
+            </a><a href="#" id="view-comments" class="fixed-button" title="查看评论">
+                <i class="fas fa-comment fa-fw"></i>
+            </a>
+        </div><script type="text/javascript" src="/lib/smooth-scroll/smooth-scroll.min.js"></script><script type="text/javascript" src="/lib/autocomplete/autocomplete.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.stemmer.support.min.js"></script><script type="text/javascript" src="/lib/lunr/lunr.zh.min.js"></script><script type="text/javascript" src="/lib/lazysizes/lazysizes.min.js"></script><script type="text/javascript" src="/lib/clipboard/clipboard.min.js"></script><script type="text/javascript" src="/lib/sharer/sharer.min.js"></script><script type="text/javascript">window.config={"code":{"copyTitle":"复制到剪贴板","maxShownLines":10},"comment":{},"search":{"highlightTag":"em","lunrIndexURL":"/index.json","lunrLanguageCode":"zh","lunrSegmentitURL":"/lib/lunr/lunr.segmentit.js","maxResultLength":10,"noResultsFound":"没有找到结果","snippetLength":50,"type":"lunr"}};</script><script type="text/javascript" src="/js/theme.min.js"></script></body>
+</html>
