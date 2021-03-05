@@ -13,13 +13,6 @@
     <guid>http://kljsumi.gitee.io/posts/redis/redissonandspringcache/redissonandspringcache/</guid>
     <description><![CDATA[分布式缓存 Redis分布式锁 先来看一段SpringBoot整合Redis的代码 1 2 3 4 5 6 7 8 9 10 11 12 public String getInfo() { // 缓存逻辑 String info = stringRedisTemplate.opsForValue().get(&#34;info&#34;); if (StringUtils.isEmpty(info)) { Sys]]></description>
 </item><item>
-    <title>Docker磁盘占用100%</title>
-    <link>http://kljsumi.gitee.io/posts/linux/vagrant_full_capacity/vagrant_full_capacity/</link>
-    <pubDate>Fri, 20 Nov 2020 15:53:46 &#43;0800</pubDate>
-    <author>作者</author>
-    <guid>http://kljsumi.gitee.io/posts/linux/vagrant_full_capacity/vagrant_full_capacity/</guid>
-    <description><![CDATA[背景 之前使用VirtualBox+Vagrant搭建了一个虚拟机，使用Docker下载了Mysql和Redis点击这里。这次需要安装一个El]]></description>
-</item><item>
     <title>第一次使用Docker</title>
     <link>http://kljsumi.gitee.io/posts/linux/create/create/</link>
     <pubDate>Tue, 27 Oct 2020 21:45:18 &#43;0800</pubDate>
